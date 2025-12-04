@@ -252,8 +252,8 @@ resource "aws_iam_role_policy" "glue_policy" {
 resource "aws_s3_object" "etl_script" {
   bucket = aws_s3_bucket.data_lake.id
   key    = "scripts/etl_script.py"
-  source = "src/etl_script.py" # Local file path (updated after repo reorganization)
-  etag   = filemd5("src/etl_script.py")
+  source = "../scripts/etl_script.py" # Local file path
+  etag   = filemd5("../scripts/etl_script.py")
 }
 
 # --- AWS Glue Job ---
@@ -274,6 +274,7 @@ resource "aws_glue_job" "clean_orders" {
   worker_type  = "G.1X" # Smallest worker type
   number_of_workers = 2
 }
+
 
 
 
@@ -397,3 +398,22 @@ resource "aws_iam_role_policy" "crawler_s3" {
         Effect = "Allow"
         Action = ["s3:GetObject", "s3:PutObject"]
         Resource = [
+          aws_s3_bucket.data_lake.arn,
+          "${aws_s3_bucket.data_lake.arn}/*"
+        ]
+      }
+    ]
+  })
+}
+
+# 3. The Crawler (The Robot)
+resource "aws_glue_crawler" "qsr_crawler" {
+  database_name = aws_glue_catalog_database.qsr_db.name
+  name          = "qsr-clean-data-crawler"
+  role          = aws_iam_role.crawler_role.arn
+
+  # Point it to the CLEAN folder (The Silver Layer)
+  s3_target {
+    path = "s3://${aws_s3_bucket.data_lake.id}/clean/"
+  }
+}

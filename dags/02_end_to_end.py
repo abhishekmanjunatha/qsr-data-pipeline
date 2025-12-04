@@ -18,7 +18,7 @@ with DAG('02_end_to_end_pipeline',
     # 1. Wait for file
     wait_for_file = S3KeySensor(
         task_id='wait_for_raw_data',
-        bucket_name='qsr-data-lake-14a75b64', # <--- VERIFY THIS
+        bucket_name='qsr-data-lake-f2ee1900', # <--- VERIFY THIS
         bucket_key='raw/orders.csv',
         aws_conn_id='aws_default',
         poke_interval=10,
@@ -38,7 +38,7 @@ with DAG('02_end_to_end_pipeline',
         task_id='trigger_glue_job',
         job_name='qsr-clean-orders-job',
         script_args={
-            '--bucket_name': 'qsr-data-lake-14a75b64', # <--- VERIFY THIS
+            '--bucket_name': 'qsr-data-lake-f2ee1900', # <--- VERIFY THIS
             '--source_key': 'raw/orders.csv',
             '--format': 'csv'
         },

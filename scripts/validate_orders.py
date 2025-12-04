@@ -5,7 +5,7 @@ import great_expectations as gx
 from io import BytesIO
 
 # --- Configuration ---
-BUCKET_NAME = "qsr-data-lake-14a75b64" # <--- UPDATE THIS
+BUCKET_NAME = "qsr-data-lake-f2ee1900" # <--- UPDATE THIS
 KEY = "raw/orders.csv"
 
 def validate_data():

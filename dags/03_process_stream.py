@@ -19,7 +19,7 @@ with DAG('03_process_stream_data',
         task_id='trigger_glue_stream',
         job_name='qsr-clean-orders-job',
         script_args={
-            '--bucket_name': 'qsr-data-lake-14a75b64', # <--- YOUR BUCKET HERE
+            '--bucket_name': 'qsr-data-lake-f2ee1900', # <--- YOUR BUCKET HERE
             '--source_key': 'raw_stream/',             # Point to Kinesis dump
             '--format': 'json'                         # Tell Spark it is JSON
         },

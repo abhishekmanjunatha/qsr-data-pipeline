@@ -242,13 +242,25 @@ Keeps project functional but costs only **~$0.03/day** for EBS.
 # 📈 Athena Query Example
 
 ```sql
+/* NOTE: Sometimes AWS Glue Crawler creates separate tables for partitions. 
+Use UNION ALL to see the unified view.
+*/
+
 SELECT 
-    input_source, 
-    COUNT(*) AS total_orders, 
-    SUM(amount) AS revenue,
-    AVG(amount) AS avg_ticket_size
-FROM qsr_analytics_db.clean
-GROUP BY input_source;
+    'Batch' AS source, 
+    count(*) AS total_orders, 
+    sum(amount) AS revenue,
+    avg(amount) AS avg_ticket_price
+FROM "qsr_analytics_db"."input_source_batch_manual"
+
+UNION ALL
+
+SELECT 
+    'Streaming' AS source, 
+    count(*) AS total_orders, 
+    sum(amount) AS revenue,
+    avg(amount) AS avg_ticket_price
+FROM "qsr_analytics_db"."input_source_stream_kinesis";
 ```
 
 ---

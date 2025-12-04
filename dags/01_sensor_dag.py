@@ -18,7 +18,7 @@ with DAG('01_s3_sensor_dag',
     # 3. Define the Task: Wait for orders.csv
     wait_for_file = S3KeySensor(
         task_id='wait_for_s3_file',
-        bucket_name='qsr-data-lake-a4857ac9', # <--- VERIFY THIS MATCHES YOUR BUCKET
+        bucket_name='qsr-data-lake-f2ee1900', # <--- VERIFY THIS MATCHES YOUR BUCKET
         bucket_key='raw/orders.csv',
         aws_conn_id='aws_default', # Airflow uses this to talk to S3
         poke_interval=10,          # Check every 10 seconds
