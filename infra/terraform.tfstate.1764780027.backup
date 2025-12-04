@@ -1,0 +1,79 @@
+{
+  "version": 4,
+  "terraform_version": "1.14.0",
+  "serial": 113,
+  "lineage": "598ce5ef-175e-a5b1-3ac0-197d3cc78365",
+  "outputs": {
+    "airflow_url": {
+      "value": "http://18.232.161.120:8080",
+      "type": "string"
+    },
+    "ssh_command": {
+      "value": "ssh -i qsr-key.pem ubuntu@18.232.161.120",
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "mode": "data",
+      "type": "aws_availability_zones",
+      "name": "available",
+      "provider": "provider[\\"registry.terraform.io/hashicorp/aws\\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "all_availability_zones": null,
+            "exclude_names": null,
+            "exclude_zone_ids": null,
+            "filter": null,
+            "group_names": [
+              "us-east-1-zg-1"
+            ],
+            "id": "us-east-1",
+            "names": [
+              "us-east-1a",
+              "us-east-1b",
+              "us-east-1c",
+              "us-east-1d",
+              "us-east-1e",
+              "us-east-1f"
+            ],
+            "state": "available",
+            "timeouts": null,
+            "zone_ids": [
+              "use1-az6",
+              "use1-az1",
+              "use1-az2",
+              "use1-az4",
+              "use1-az3",
+              "use1-az5"
+            ]
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_glue_job",
+      "name": "clean_orders",
+      "provider": "provider[\\"registry.terraform.io/hashicorp/aws\\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "arn": "arn:aws:glue:us-east-1:805149720350:job/qsr-clean-orders-job",
+            "command": [
+              {
+                "name": "glueetl",
+                "python_version": "3",
+                "runtime": "",
+                "script_location": "s3://qsr-data-lake-a4857ac9/scripts/etl_script.py"
+              }
+            ],
+            "connections": null,
+            "default_arguments": {
+              "--bucket_name": "qsr-data-lake-a4857ac9"
+            },

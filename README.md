@@ -10,7 +10,18 @@
 
 A highly scalable **real-time + batch analytics platform** designed for Quick Service Restaurants (QSR).
 It ingests raw data from CSV uploads and streaming POS events, validates it with **Great Expectations**, processes it using **PySpark** in AWS Glue, and organizes the data into a structured **Medallion Architecture** (Bronze → Silver → Gold) stored in S3 and queried using Athena.
+ 
+---
 
+**Repository layout**
+
+- `dags/`: Airflow DAGs (moved `01_sensor_dag.py`, `02_end_to_end.py`, `03_process_stream.py`).
+- `src/`: Core Python scripts (moved `etl_script.py`, `producer.py`, `validate_orders.py`).
+- `data/`: Sample and test data (moved `orders.csv`, `bad_orders.csv`).
+- `infra/`: Terraform files and backups (moved `main.tf` and `terraform*` backups).
+- `README.md`: This file (updated to reflect layout).
+
+---
 ---
 
 # 🏛️ Architecture 
