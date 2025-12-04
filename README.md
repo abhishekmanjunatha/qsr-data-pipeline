@@ -1,15 +1,3 @@
-Here is your **FULL, upgraded, polished, interview-quality README.md** with:
-
-✅ **Improved visualization**
-✅ **Enhanced Medallion Architecture diagram (Bronze → Silver → Gold)**
-✅ Cleaner writing and structure
-✅ Better flow for interviews + GitHub
-✅ Strong emphasis on data engineering best practices
-
-You can **copy–paste the full README** below.
-
----
-
 # 🍔 QSR Real-Time Analytics Platform
 
 **Unified Batch + Real-Time Data Engineering Pipeline (Production-Ready)**
