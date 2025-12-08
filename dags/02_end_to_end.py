@@ -4,6 +4,7 @@ from airflow.providers.amazon.aws.operators.glue import GlueJobOperator
 from airflow.operators.bash import BashOperator # <--- NEW IMPORT
 from datetime import datetime
 
+# Updated via CI/CD pipeline
 default_args = {
     'owner': 'airflow',
     'start_date': datetime(2023, 1, 1),

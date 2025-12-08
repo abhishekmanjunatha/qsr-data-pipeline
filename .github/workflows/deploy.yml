@@ -1,0 +1,41 @@
+name: Deploy to EC2
+
+# Trigger deployment only on push to main branch
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'dags/**'
+      - 'scripts/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Deploy to EC2
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        source: "dags/*,scripts/*"
+        target: "/home/ubuntu/airflow/"
+        strip_components: 0 
+        # This keeps the folder structure (e.g. /home/ubuntu/airflow/dags/...)
+
+    - name: Restart Airflow Scheduler (Optional but recommended)
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          # We just print a message for now. 
+          # In production, we might restart the scheduler if we changed plugins.
+          echo "✅ Code deployed successfully!"
+          ls -l /home/ubuntu/airflow/dags/
