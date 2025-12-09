@@ -122,6 +122,26 @@ resource "aws_iam_role_policy" "mwaa_policy" {
         Effect = "Allow"
         Action = ["glue:*", "iam:PassRole"]
         Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "kinesis:PutRecord",
+          "kinesis:PutRecords",
+          "kinesis:DescribeStream"
+        ]
+        Resource = aws_kinesis_stream.order_stream.arn
+      },
+      {
+        Effect = "Allow"
+        Action = ["athena:*"]
+        Resource = "*"
+      },
+      # 👇 NEW: Allow Airflow to find other servers' IPs
+      {
+        Effect = "Allow"
+        Action = ["ec2:DescribeInstances"]
+        Resource = "*"
       }
     ]
   })
@@ -130,7 +150,7 @@ resource "aws_iam_role_policy" "mwaa_policy" {
 # --- EC2 Security Group ---
 resource "aws_security_group" "airflow_ec2_sg" {
   name        = "qsr-airflow-sg"
-  description = "Allow SSH and Airflow Web UI"
+  description = "Allow SSH, Airflow Web UI, and Grafana"
   vpc_id      = aws_vpc.main.id
 
   # SSH
@@ -145,6 +165,14 @@ resource "aws_security_group" "airflow_ec2_sg" {
   ingress {
     from_port   = 8080
     to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # 👇 NEW: Grafana UI
+  ingress {
+    from_port   = 3000
+    to_port     = 3000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -275,11 +303,7 @@ resource "aws_glue_job" "clean_orders" {
   number_of_workers = 2
 }
 
-
-
-
-
-# --- Streaming Layer (Renting this: Comment out when done) ---
+# --- Streaming Layer ---
 
 # 1. The Pipe (Kinesis Data Stream)
 resource "aws_kinesis_stream" "order_stream" {
