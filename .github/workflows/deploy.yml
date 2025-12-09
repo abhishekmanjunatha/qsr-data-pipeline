@@ -1,6 +1,5 @@
-name: Deploy to EC2
+name: Deploy to Airflow
 
-# Trigger deployment only on push to main branch
 on:
   push:
     branches:
@@ -12,30 +11,34 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
 
+    # 👇 1. Log in to AWS so we can search for the server
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    # 👇 2. Find the IP dynamically using the Instance ID
+    - name: Get Airflow IP
+      id: get_ip
+      run: |
+        IP=$(aws ec2 describe-instances --instance-ids ${{ secrets.AIRFLOW_INSTANCE_ID }} --query "Reservations[0].Instances[0].PublicIpAddress" --output text)
+        echo "Detected Airflow IP: $IP"
+        echo "AIRFLOW_HOST=$IP" >> $GITHUB_ENV
+
+    # 👇 3. Deploy using the detected IP
     - name: Deploy to EC2
       uses: appleboy/scp-action@master
       with:
-        host: ${{ secrets.EC2_HOST }}
+        host: ${{ env.AIRFLOW_HOST }}  # <--- Uses the variable we just found
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
         source: "dags/*,scripts/*"
         target: "/home/ubuntu/airflow/"
-        strip_components: 0 
-        # This keeps the folder structure (e.g. /home/ubuntu/airflow/dags/...)
-
-    - name: Restart Airflow Scheduler (Optional but recommended)
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ubuntu
-        key: ${{ secrets.EC2_SSH_KEY }}
-        script: |
-          # We just print a message for now. 
-          # In production, we might restart the scheduler if we changed plugins.
-          echo "✅ Code deployed successfully!"
-          ls -l /home/ubuntu/airflow/dags/
+        strip_components: 0
