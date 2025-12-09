@@ -149,7 +149,7 @@ resource "aws_iam_role_policy" "mwaa_policy" {
 
 # --- EC2 Security Group ---
 resource "aws_security_group" "airflow_ec2_sg" {
-  name        = "qsr-airflow-sg"
+  name        = "qsr-airflow-sg-v2"   # <--- 1. NEW NAME
   description = "Allow SSH, Airflow Web UI, and Grafana"
   vpc_id      = aws_vpc.main.id
 
@@ -169,7 +169,7 @@ resource "aws_security_group" "airflow_ec2_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # 👇 NEW: Grafana UI
+  # Grafana UI
   ingress {
     from_port   = 3000
     to_port     = 3000
@@ -183,7 +183,13 @@ resource "aws_security_group" "airflow_ec2_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  tags = { Name = "qsr-airflow-sg" }
+
+  tags = { Name = "qsr-airflow-sg-v2" }
+
+  # 👇 2. CRITICAL FIX: Create the new one before killing the old one
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # --- Key Pair ---
@@ -301,6 +307,11 @@ resource "aws_glue_job" "clean_orders" {
   glue_version = "4.0"
   worker_type  = "G.1X" # Smallest worker type
   number_of_workers = 2
+
+  # 👇 NEW: Allow multiple runs at the same time
+  execution_property {
+    max_concurrent_runs = 5
+  }
 }
 
 # --- Streaming Layer ---
