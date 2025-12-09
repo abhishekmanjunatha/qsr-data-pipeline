@@ -7,7 +7,7 @@ import requests
 STREAM_NAME = "qsr-real-time-orders"
 REGION = "us-east-1"
 # 👇 YOUR NEW API IP (The "Order System")
-API_URL = "http://44.200.65.175:5000/order"
+API_URL = "http://3.239.49.145:5000/order"
 
 # Initialize Kinesis
 kinesis = boto3.client('kinesis', region_name=REGION)
